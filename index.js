@@ -7,6 +7,7 @@ const cors = require('cors');
 const express = require('express');
 
 const app = express();
+process.env.port = 2227;
 
 const formatDate = ({ start }) => {
   const m = new moment(start);
