@@ -1,16 +1,18 @@
 <html>
   <head>
     <style>
+      html {
+        height: 100%;
+      }
+
       body {
         background-color: beige;
-        color: teal;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
+        color: rgb(202, 109, 33);
+        padding: calc((100vh - 518px) / 2) 0;
       }
 
       .main {
+        margin: auto;
         height: 500px;
         width: 600px;
         border-radius: 8px;
@@ -48,56 +50,68 @@
     <div class="main">
       <form id="evtForm" method="post" class="eventForm" novalidate>
         <h1>Create calendar event</h1>
-        <label for="start">Pick a date</label>
-        <input type="datetime-local" name="eventDate" id="start" value="" autocomplete="off">
-        <label for="title">Name an event</label>
-        <input type="text" name="eventSummary" id="title">
-        <label for="descr">Describe an event</label>
-        <input type="text" name="eventDescription" id="description">
-        <input type="submit" value="Create Event" class="submitButton">
+        <label for="start"> Data of start event </label>
+        <input id="start" type="datetime-local" min="2019-12-28T00:00" value="2019-12-28T00:00"/>
+        <label for="end"> Data of end event </label>
+        <input id="end" type="datetime-local" min="2019-12-28T01:00" value="2019-12-28T10:00"/>
+        <label for="name"> Name </label>
+        <input id="name" type="text" value=""/>
+        <label for="tip"> Type </label>
+        <select id="tip">
+          <option>Bday</option>
+          <option>Party</option>
+          <option>Work</option>
+          <option>Wedding</option>
+          <option>Hacking</option>
+        </select> 
+        <input type="submit" value="Create event" />    
       </form>
     </div>
-    <script type="text/javascript">
-      (function() {
-        window.API_PATH = "https://secure-fortress-38124.herokuapp.com";
-        // local dev
-        // window.API_PATH = "http://localhost:3000";
-
-        function getValue(id) {
-          const el = document.getElementById(id);
-          return el.value;
-        }
-
-        function onEventSubmit(evt) {
-          evt.preventDefault();
-
-          const calendarEvent = {
-            start: getValue("start"),
-            title: getValue("title"),
-            description: getValue("description")
-          };
-
-          const requestOptions = {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify([
-              calendarEvent
-            ])
-          };
-
-          fetch(window.API_PATH, requestOptions)
-            .then(response => response.text())
-            .then((path) => window.open(`${window.API_PATH}/public/${path}`));
-        }
-
-        const form = document.getElementById("evtForm");
-        form.addEventListener("submit", onEventSubmit);
-
-        const picker = document.getElementById("start");
-        picker.value = new Date().toISOString().slice(0, -5)
-      })()
-    </script>
   </body>
+  <script type="text/javascript">
+    (function() {
+      window.API_PATH = "https://secure-fortress-38124.herokuapp.com";
+      // local dev
+      // window.API_PATH = "http://localhost:3000";
+
+      function getValue(id) {
+        const el = document.getElementById(id);
+        return el.value;
+      }
+
+      function onEventSubmit(evt) {
+        evt.preventDefault();
+        
+        let post = {
+          start:getValue("start"),
+          end:getValue("end"),
+          description: getValue("tip"),
+          title:getValue("name")
+
+        };
+        console.log(JSON.stringify([
+            post
+            ]));
+        const requestOptions = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify([
+            post
+            ])//PASS OBJECT HERE.
+        };
+
+        fetch(window.API_PATH, requestOptions)
+          .then(response => response.text())
+          .then((path) => window.open(`${window.API_PATH}/public/${path}`));
+      }
+
+      const form = document.getElementById("evtForm");
+      form.addEventListener("submit", onEventSubmit);
+
+      const picker = document.getElementById("start");
+      picker.value = new Date().toISOString().slice(0, -5)
+    })()
+  </script>
 </html>
