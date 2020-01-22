@@ -1,117 +1,117 @@
 <html>
-  <head>
-    <style>
-      html {
-        height: 100%;
-      }
+<head>
+  <style>
+    html {
+      height: 100%;
+    }
 
-      body {
-        background-color: beige;
-        color: rgb(202, 109, 33);
-        padding: calc((100vh - 518px) / 2) 0;
-      }
+    body {
+      background-color: beige;
+      color: rgb(202, 109, 33);
+      padding: calc((100vh - 518px) / 2) 0;
+    }
 
-      .main {
-        margin: auto;
-        height: 500px;
-        width: 600px;
-        border-radius: 8px;
-        border: 1px solid lightslategray;
-      }
+    .main {
+      margin: auto;
+      height: 500px;
+      width: 600px;
+      border-radius: 8px;
+      border: 1px solid lightslategray;
+    }
 
-      .eventForm {
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-around;
-        align-items: center;
-      }
+    .eventForm {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
 
-      input {
-        margin: 20px 0;
-        width: 60%;
-        height: 32px;
-        font-size: 20px;
-        border-radius: 8px;
-      }
+    input {
+      margin: 20px 0;
+      width: 60%;
+      height: 32px;
+      font-size: 20px;
+      border-radius: 8px;
+    }
 
-      label {
-        font-size: 20px;
-      }
+    label {
+      font-size: 20px;
+    }
 
-      .submitButton {
-        background-color: lightseagreen;
-        color: beige;
-        height: 40px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="main">
-      <form id="evtForm" method="post" class="eventForm" novalidate>
-        <h1>Create calendar event</h1>
-        <label for="start"> Data of start event </label>
-        <input id="start" type="datetime-local" min="2019-12-28T00:00" value="2019-12-28T00:00"/>
-        <label for="end"> Data of end event </label>
-        <input id="end" type="datetime-local" min="2019-12-28T01:00" value="2019-12-28T10:00"/>
-        <label for="name"> Name </label>
-        <input id="name" type="text" value=""/>
-        <label for="tip"> Type </label>
-        <select id="tip">
-          <option>Bday</option>
-          <option>Party</option>
-          <option>Work</option>
-          <option>Wedding</option>
-          <option>Hacking</option>
-        </select> 
-        <input type="submit" value="Create event" />    
-      </form>
-    </div>
-  </body>
-  <script type="text/javascript">
-    (function() {
-      window.API_PATH = "https://secure-fortress-38124.herokuapp.com";
-      // local dev
-      // window.API_PATH = "http://localhost:3000";
+    .submitButton {
+      background-color: lightseagreen;
+      color: beige;
+      height: 40px;
+    }
+  </style>
+</head>
+<body>
+<div class="main">
+  <form id="evtForm" method="post" class="eventForm" novalidate>
+    <h1>Create calendar event</h1>
+    <label for="start"> Data of start event </label>
+    <input id="start" type="datetime-local" min="2019-12-28T00:00" value="2019-12-28T00:00"/>
+    <label for="end"> Data of end event </label>
+    <input id="end" type="datetime-local" min="2019-12-28T01:00" value="2019-12-28T10:00"/>
+    <label for="name"> Name </label>
+    <input id="name" type="text" value=""/>
+    <label for="tip"> Type </label>
+    <select id="tip">
+      <option>Bday</option>
+      <option>Party</option>
+      <option>Work</option>
+      <option>Wedding</option>
+      <option>Hacking</option>
+    </select>
+    <input type="submit" value="Create event" />
+  </form>
+</div>
+</body>
+<script type="text/javascript">
+  (function() {
+    // window.API_PATH = "https://secure-fortress-38124.herokuapp.com";
+    // local dev
+    window.API_PATH = "http://localhost:2227";
 
-      function getValue(id) {
-        const el = document.getElementById(id);
-        return el.value;
-      }
+    function getValue(id) {
+      const el = document.getElementById(id);
+      return el.value;
+    }
 
-      function onEventSubmit(evt) {
-        evt.preventDefault();
-        
-        let post = {
-          start:getValue("start"),
-          end:getValue("end"),
-          description: getValue("tip"),
-          title:getValue("name")
+    function onEventSubmit(evt) {
+      evt.preventDefault();
 
-        };
-        console.log(JSON.stringify([
-            post
-            ]));
-        const requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify([
-            post
-            ])//PASS OBJECT HERE.
-        };
+      let post = {
+        start:getValue("start"),
+        end:getValue("end"),
+        description: getValue("tip"),
+        title:getValue("name")
 
-        fetch(window.API_PATH, requestOptions)
-          .then(response => response.text())
-          .then((path) => window.open(`${window.API_PATH}/public/${path}`));
-      }
+      };
+      console.log(JSON.stringify([
+        post
+      ]));
+      const requestOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify([
+          post
+        ])//PASS OBJECT HERE.
+      };
 
-      const form = document.getElementById("evtForm");
-      form.addEventListener("submit", onEventSubmit);
+      fetch(window.API_PATH, requestOptions)
+              .then(response => response.text())
+              .then((path) => window.open(`${window.API_PATH}/public/${path}`));
+    }
 
-      const picker = document.getElementById("start");
-      picker.value = new Date().toISOString().slice(0, -5)
-    })()
-  </script>
+    const form = document.getElementById("evtForm");
+    form.addEventListener("submit", onEventSubmit);
+
+    const picker = document.getElementById("start");
+    picker.value = new Date().toISOString().slice(0, -5)
+  })()
+</script>
 </html>
