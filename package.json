@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "4.17.1",
+    "dotenv": "^8.2.0",
     "ics": "2.18.0",
     "uuid": "3.3.3",
     "moment": "2.24.0",

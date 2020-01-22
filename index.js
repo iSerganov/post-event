@@ -5,15 +5,17 @@ const moment = require('moment');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
+const dotenv = require('dotenv');
+
+const config = dotenv.config().parsed;
 
 const app = express();
-process.env.port = 2227;
 
-const formatDate = ({ start }) => {
-  const m = new moment(start);
+const formatDate = (range) => (args) => {
+  const m = new moment(args[range]);
   return [
     m.year(),
-    m.month(),
+    m.month() + 1,
     m.date(),
     m.hour(),
     m.minute()
@@ -36,10 +38,8 @@ app.post('/', (req, res) => {
   const { error, value } = ics.createEvents(
     evts.map(evt => ({
       ...evt,
-      start: formatDate(evt),
-      duration: {
-        hours: 1
-      },
+      start: formatDate('start')(evt),
+      end: formatDate('end')(evt),
       status: 'CONFIRMED',
       busyStatus: 'BUSY',
     }))
@@ -63,6 +63,6 @@ app.get('/public/:path', ({ params: { path } }, res) => res.download(`${__dirnam
 app.get('/', (req, res) => res.sendFile(`${__dirname}/index.html`));
 
 app.listen(
-  process.env.PORT,
-  () => console.log(`Example app listening on port ${process.env.PORT}!`)
+  config.PORT,
+  () => console.log(`Example app listening on port ${config.PORT}!`)
 );
