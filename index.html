@@ -45,26 +45,24 @@
         height: 40px;
       }
     </style>
+    <script
+      type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC6cQpkMmhov7aC_KrnWgEVwTprdr1oMNg&libraries=places"
+    ></script>
   </head>
   <body>
+    <div id="map"></div>
     <div class="main">
       <form id="evtForm" method="post" class="eventForm" novalidate>
-        <h1>Create calendar event</h1>
-        <label for="start"> Data of start event </label>
-        <input id="start" type="datetime-local" min="2019-12-28T00:00" value="2019-12-28T00:00"/>
-        <label for="end"> Data of end event </label>
-        <input id="end" type="datetime-local" min="2019-12-28T01:00" value="2019-12-28T10:00"/>
-        <label for="name"> Name </label>
-        <input id="name" type="text" value=""/>
-        <label for="tip"> Type </label>
-        <select id="tip">
-          <option>Bday</option>
-          <option>Party</option>
-          <option>Work</option>
-          <option>Wedding</option>
-          <option>Hacking</option>
-        </select> 
-        <input type="submit" value="Create event" />    
+        <h1>Input coordinates (x,y)</h1>
+        <label for="shirota"> широта </label>
+        <input id="shirota" type="number" value="46.4825" />
+        <label for="dolgota"> долгота </label>
+        <input id="dolgota" type="number" value="30.7233" />
+        <label for="R"> radius </label>
+        <input id="radius" type="number" min="0" value="100" />
+        <input type="submit" value="find places" />
+        <textarea name="Info" id="rawData" cols="100" rows="20"></textarea>
       </form>
     </div>
   </body>
@@ -78,40 +76,39 @@
         const el = document.getElementById(id);
         return el.value;
       }
-
+      function callback(results, status) {
+        if (status == google.maps.places.PlacesServiceStatus.OK) {
+          for (var i = 0; i < results.length; i++) {
+            var place = results[i];
+            document.getElementById('rawData').value += '\n' + `Place #${i + 1}: ` + JSON.stringify(results[i]) + '\n';
+          }
+        }
+      }
       function onEventSubmit(evt) {
         evt.preventDefault();
-        
-        let post = {
-          start:getValue("start"),
-          end:getValue("end"),
-          description: getValue("tip"),
-          title:getValue("name")
 
-        };
-        console.log(JSON.stringify([
-            post
-            ]));
-        const requestOptions = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify([
-            post
-            ])//PASS OBJECT HERE.
+        var place = new google.maps.LatLng(
+          getValue("shirota"),
+          getValue("dolgota")
+        );
+
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: place,
+          zoom: 15
+        });
+
+        var request = {
+          location: place,
+          radius: getValue("radius"),
+          type: ["restaurant"]
         };
 
-        fetch(window.API_PATH, requestOptions)
-          .then(response => response.text())
-          .then((path) => window.open(`${window.API_PATH}/public/${path}`));
+        service = new google.maps.places.PlacesService(map);
+        service.nearbySearch(request, callback);
       }
 
       const form = document.getElementById("evtForm");
       form.addEventListener("submit", onEventSubmit);
-
-      const picker = document.getElementById("start");
-      picker.value = new Date().toISOString().slice(0, -5)
-    })()
+    })();
   </script>
 </html>
